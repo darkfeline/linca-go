@@ -72,7 +72,7 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 func linker(destdir string, events <-chan *notifyEvent) {
 	for event := range events {
 		log.Printf("Got event %#v", event)
-		if event.file == "" || !event.hasEvent("DELETE") {
+		if event.file == "" || event.hasEvent("DELETE") {
 			// This is an event we don't care about
 			continue
 		}
