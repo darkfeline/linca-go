@@ -71,7 +71,7 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 // Handle received events and do any necessary action.
 func linker(destdir string, events <-chan *notifyEvent) {
 	for event := range events {
-		if event.file == "" {
+		if event.file == "" || !event.hasEvent("delete") {
 			// This is an event we don't care about
 			continue
 		}
@@ -81,7 +81,7 @@ func linker(destdir string, events <-chan *notifyEvent) {
 			log.Printf("Stat error on %s: %s", file, err)
 			continue
 		}
-		if event.hasEvent("create") {
+		if event.hasEvent("create") || event.hasEvent("moved_to") {
 			if fi.IsDir() {
 				err := mkdirp(destdir)
 				if err != nil {
