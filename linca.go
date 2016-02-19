@@ -85,10 +85,8 @@ func linker(destdir string, events <-chan *notifyEvent) {
 		}
 		if event.hasEvent("CREATE") || event.hasEvent("MOVED_TO") {
 			if fi.IsDir() {
-				err := mkdirp(dest)
-				if err != nil {
-					log.Printf("Error creating dir: %s", err)
-				}
+				cmd := exec.Command("cp", "-al", file, destdir)
+				cmd.Run()
 			} else {
 				err := os.Link(file, dest)
 				if err != nil {
