@@ -71,7 +71,7 @@ func linker(destdir string, events <-chan *notifyEvent) {
 		}
 		fi, err := os.Stat(event.file)
 		if err != nil {
-			log.Printf("Stat error on %s", event.file)
+			log.Printf("Stat error on %s: %s", event.file, err)
 			continue
 		}
 		if event.hasEvent("create") {
