@@ -94,14 +94,6 @@ func linker(destdir string, events <-chan *notifyEvent) {
 				}
 			}
 		}
-		if event.hasEvent("MODIFY") {
-			if fi.IsDir() {
-				cmd := exec.Command("cp", "-al", file, destdir)
-				cmd.Run()
-			} else {
-				// File modified.  Already linked, so do nothing.
-			}
-		}
 	}
 }
 
