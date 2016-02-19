@@ -71,6 +71,7 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 // Handle received events and do any necessary action.
 func linker(destdir string, events <-chan *notifyEvent) {
 	for event := range events {
+		log.Printf("Got event %#v", event)
 		if event.file == "" || !event.hasEvent("delete") {
 			// This is an event we don't care about
 			continue
