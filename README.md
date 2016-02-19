@@ -1,15 +1,16 @@
-ytplay
-======
+linca
+=====
 
-ytplay is a simple program made to solve a specific problem.
+linca is a simple directory watching and linking program.
 
-ytplay reads in lines of YouTube URLs from stdin and plays their audio one by
-one in order, and echos them to stdout.
+Run linca with arguments supplying watch and destination directories:
 
-Let's say you're browsing YouTube and finding songs to listen to.  Start running
-ytplay in a terminal and redirect its output to a file.  Whenever you come
-across a song you want to listen to, simply paste its URL into the terminal and
-it will be queued for playback.  Its URL will also be echoed into whichever file
-you set up, for you to do whatever with later.
+    $ linca a b
 
-ytplay requires youtube-dl and mpv.
+All files and directories created in or moved to `a` will be linked to `b`.
+Specifically, on inotify events CREATE and MOVED_TO, linca will link files and
+`cp -al` directories to `b`.
+
+linca is useful for, e.g., processing downloaded files from torrent clients.
+
+linca requires inotify-tools.
