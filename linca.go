@@ -77,6 +77,7 @@ func linker(destdir string, events <-chan *notifyEvent) {
 			continue
 		}
 		file := path.Join(event.watched, event.file)
+		dest := path.Join(destdir, event.file)
 		fi, err := os.Stat(file)
 		if err != nil {
 			log.Printf("Stat error on %s: %s", file, err)
@@ -89,7 +90,7 @@ func linker(destdir string, events <-chan *notifyEvent) {
 					log.Printf("Error creating dir: %s", err)
 				}
 			} else {
-				err := os.Link(file, destdir)
+				err := os.Link(file, dest)
 				if err != nil {
 					log.Printf("Error linking file: %s", err)
 				}
