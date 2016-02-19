@@ -65,6 +65,10 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 // Handle received events and do any necessary action.
 func linker(destdir string, events <-chan *notifyEvent) {
 	for event := range events {
+		if event.file == "" {
+			// This is an event we don't care about
+			continue
+		}
 		fi, err := os.Stat(event.file)
 		if err != nil {
 			log.Printf("Stat error on %s", event.file)
