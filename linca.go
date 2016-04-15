@@ -2,11 +2,13 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"path"
 	"strings"
+	"sync"
 )
 
 // Represents inotify event returned from inotifywait.
@@ -46,8 +48,17 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 	cmd := exec.Command("inotifywait", "-m", "--format", "%w\n%e\n%f", watchdir)
 	output, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Fatalf("Error trying to watch %s: %s", watchdir, err)
+		log.Fatalf("Error starting inotifywait: %s", err)
 	}
+
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		log.Fatalf("Error starting inotifywait: %s", err)
+	}
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go logStderr(stderr, &wg)
+
 	scanner := bufio.NewScanner(output)
 	cmd.Start()
 	for scanner.Scan() {
@@ -65,6 +76,21 @@ func watcher(watchdir string, out chan<- *notifyEvent) {
 	}
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error scanning inotifywait output: %s", err)
+	}
+
+	wg.Wait()
+
+	if err := cmd.Wait(); err != nil {
+		log.Fatalf("inotifywait exited with non-zero: %s", err)
+	}
+}
+
+// Log StderrPipe output.
+func logStderr(stderr io.Reader, wg *sync.WaitGroup) {
+	defer wg.Done()
+	scanner := bufio.NewScanner(stderr)
+	for scanner.Scan() {
+		log.Print(scanner.Text())
 	}
 }
 
